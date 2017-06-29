@@ -23,7 +23,7 @@ INFO: If you want to use your own public key, please replace am2.key with your o
 
 how to setup inventory: http://docs.ansible.com/ansible/intro_inventory.html
 
-base to setup is
+base to setup is<br />
 [apache-server] - servers list where we want apache + magento2<br />
 [nginx-server]  - servers list where we want nginx + magento2<br />
 [mariadb-server] - server list where we want database ( you can list same servers as we use for web server and instal database inside each one )<br />
@@ -133,9 +133,9 @@ and comment line 80-82. REMEBER TO REMOVE COMMENT AFTER TEST!!
 in progress to get form key from product page.
 
 <pre>
-./test.sh checkout/cart/add/product/6/qty/1 > test-4-1-add-product-to-cart.html
-./test.sh checkout/cart/add/product/6/qty/1 > test-4-2-add-product-to-cart.html
-./test-add-product-to-cart-edge.sh  > test-4-3-add-product-to-cart.html
+./test.sh checkout/cart/add/product/6/qty/1 > results/test-4-1-add-product-to-cart.html
+./test.sh checkout/cart/add/product/6/qty/1 > results/test-4-2-add-product-to-cart.html
+./test-add-product-to-cart-edge.sh  > results/test-4-3-add-product-to-cart.html
 </pre>
 
 
