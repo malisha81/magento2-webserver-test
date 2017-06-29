@@ -1,4 +1,4 @@
-<h2> SETAUP ANIBLE and ANIBLE USER am2 </h2>
+<h2> SETUP ANIBLE and ANIBLE USER am2 </h2>
 
 install ansible on your local computer: http://docs.ansible.com/ansible/intro_installation.html
 
@@ -49,7 +49,7 @@ ansible nginx-server  -i ./inventory.ini --private-key="am2.key" -m command -a "
 
 <pre>ansible-playbook -i ./inventory.ini --private-key="am2.key" database.yml</pre>
 
-INFO: ansible wont setup root sure, but will install python module to control databases and users from ansible configuration and tasks
+INFO: Ansible will not setup root user, but will install python module to control databases and users from ansible configuration and tasks
 
 
 <h2> Setup Magento 2 </h2>
@@ -98,7 +98,7 @@ how to get new relic licence key: https://docs.newrelic.com/docs/accounts-partne
 
 
 troubleshuting:
-if you have trouble with timeout please edit test.sh and configure higer timeout.
+if you have trouble with timeout please edit test.sh and increase timeout.
 
 
 <h4>home page</h4>
