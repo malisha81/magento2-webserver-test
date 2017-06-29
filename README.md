@@ -24,10 +24,10 @@ INFO: If you want to use your own public key, please replace am2.key with your o
 how to setup inventory: http://docs.ansible.com/ansible/intro_inventory.html
 
 base to setup is
-[apache-server] - servers list where we want apache + magento2
-[nginx-server]  - servers list where we want nginx + magento2
-[mariadb-server] - server list where we want database ( you can list same servers as we use for web server and instal database inside each one )
-[php7-server]  - list all web servers, in progress to give option with php5.6
+[apache-server] - servers list where we want apache + magento2<br />
+[nginx-server]  - servers list where we want nginx + magento2<br />
+[mariadb-server] - server list where we want database ( you can list same servers as we use for web server and instal database inside each one )<br />
+[php7-server]  - list all web servers, in progress to give option with php5.6<br />
 
 
 <h2> TEST ANSIBLE CONNECTION and execution </h2>
@@ -40,7 +40,7 @@ ansible apache-server -i ./inventory.ini --private-key="am2.key" -m command -a "
 ansible nginx-server  -i ./inventory.ini --private-key="am2.key" -m command -a "/bin/echo Hello from remoute box"
 </pre>
 
-<h2> Start install web servers </h2>
+<h2> Setup web servers </h2>
 
 <pre>ansible-playbook -i ./inventory.ini --private-key="am2.key" webservers.yml</pre>
 
@@ -107,16 +107,16 @@ if you have trouble with timeout please edit test.sh and configure higer timeout
 
 <h4>category page</h4>
 <pre>
-./test.sh women/tops-women/jackets-women.html > test-2-1-apache-nginx-women-tops-women-jackets-women.html
-./test.sh women/tops-women/jackets-women.html > test-2-2-apache-nginx-women-tops-women-jackets-women.html
-./test.sh women/tops-women/jackets-women.html > test-2-3-apache-nginx-women-tops-women-jackets-women.html
+./test.sh women/tops-women/jackets-women.html > results/test-2-1-apache-nginx-women-tops-women-jackets-women.html
+./test.sh women/tops-women/jackets-women.html > results/test-2-2-apache-nginx-women-tops-women-jackets-women.html
+./test.sh women/tops-women/jackets-women.html > results/test-2-3-apache-nginx-women-tops-women-jackets-women.html
 </pre>
 
 <h4>product page</h4>
 <pre>
-./test.sh adrienne-trek-jacket.html > test-3-1-product-page.html
-./test.sh adrienne-trek-jacket.html > test-3-2-product-page.html
-./test.sh adrienne-trek-jacket.html > test-3-3-product-page.html
+./test.sh adrienne-trek-jacket.html > results/test-3-1-product-page.html
+./test.sh adrienne-trek-jacket.html > results/test-3-2-product-page.html
+./test.sh adrienne-trek-jacket.html > results/test-3-3-product-page.html
 </pre>
 
 <h4>add to cart</h4>
