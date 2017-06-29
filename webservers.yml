@@ -1,0 +1,25 @@
+---
+# file: webservers.yml
+- hosts: apache-server
+  become: yes
+  become_method: sudo
+  name: Setup Apache Web Servers
+  roles:
+    - apache
+
+- hosts: nginx-server
+  become: yes
+  become_method: sudo
+  name: Setup Nginx Web Servers
+  roles:
+    - nginx
+
+
+- hosts: php5.6-server
+  name: Setup PHP5.6 Web Servers
+
+- hosts: php7-server
+  name: Setup PHP7 Web Servers
+  roles:
+    - php7
+

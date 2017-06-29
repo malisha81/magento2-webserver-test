@@ -1,0 +1,23 @@
+---
+
+# ################################################################################
+# ###########  Test Web Server Type and Setup Magento Root Dir  ##################
+# ################################################################################
+- name: Test is Apache Web Server
+  stat: path=/var/www/html/
+  register: isApacheDir
+
+- name: SetUp isApache Variable
+  set_fact: isApache="{{ True if isApacheDir.stat.exists else False }}"
+
+- name: Test is New Relic Repository
+  stat: path=/etc/apt/sources.list.d/newrelic.list
+  register: isNewRelicRepositoryDir
+
+- name: SetUp isNewRelicInstalled Variable
+  set_fact: isNewRelicInstalled="{{ True if isNewRelicRepositoryDir.stat.exists else False }}"
+
+- name: Register Magento root Directory
+  set_fact: magento_root_dir="{{ '/var/www/html/' if isApache else '/usr/share/nginx/html/' }}"
+
+

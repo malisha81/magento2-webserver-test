@@ -1,0 +1,16 @@
+---
+# file: webservers.yml
+- hosts: apache-server
+  become: yes
+  become_method: sudo
+  name: Setup Magento On Apache Web Server
+  roles:
+    - magento2
+
+- hosts: nginx-server
+  become: yes
+  become_method: sudo
+  name: Setup Magento On Nginx Web Servers
+  roles:
+    - magento2
+

@@ -1,0 +1,53 @@
+---
+- name: Load all NewRelic variables
+  include_vars:
+    dir: 'vars/newrelic'
+    name: newrelic
+
+# ################################################################################
+# ###########  Test Web Server Type and Setup Magento Root Dir  ##################
+# ################################################################################
+
+- name: Include Global variables
+  include: 'global.yml'
+
+#- name: SetUp isNewRelicInstalled
+#  set_fact: isNewRelicInstalled=True
+
+- name: Get New Relic Repository Key
+  shell: >
+    wget -O - https://download.newrelic.com/548C16BF.gpg | sudo apt-key add -
+  when: not isNewRelicInstalled
+
+- name: Add New Relic Repository 
+  shell: >
+    sh -c 'echo "deb http://apt.newrelic.com/debian/ newrelic non-free" > /etc/apt/sources.list.d/newrelic.list'
+  when: not isNewRelicInstalled
+
+- name: install New Relic
+  apt: name=newrelic-php5 update_cache=yes state=latest
+  when: not isNewRelicInstalled
+
+- name: Add New Relic Repository Nginx
+  shell: >
+    echo 'newrelic.license="{{ newrelic.license_key}}"' >> /etc/php/7.0/fpm/php.ini
+  when: not isNewRelicInstalled
+
+- name: Setup NewRelic ini
+  template: src=templates/etc/php/7.0/mods-available/newrelic.ini.j2 dest=/etc/php/7.0/mods-available/newrelic.ini
+
+
+- name: Restart Web Server Apache
+  become: yes
+  service: name=apache2 state=restarted
+  when: isApache
+
+- name: Restart PHP fpm
+  become: yes
+  service: name=php7.0-fpm state=restarted
+  when: not isApache
+
+- name: Restart Web Server Nginx
+  become: yes
+  service: name=nginx state=restarted
+  when: not isApache

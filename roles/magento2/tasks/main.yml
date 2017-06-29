@@ -1,0 +1,172 @@
+---
+- name: Load all Magento2 variables
+  include_vars:
+    dir: 'vars/magento'
+    name: magento
+
+
+# ################################################################################
+# ###########  Test Web Server Type and Setup Magento Root Dir  ##################
+# ################################################################################
+- name: Test is Apache Web Server
+  stat: path=/var/www/html/
+  register: isApacheDir
+
+- name: Register Magento root on apache server
+  set_fact: 
+     magento_root_dir:  "/var/www/html/"
+  when: isApacheDir.stat.exists
+
+- name: Register Magento root on nginx server
+  set_fact: 
+     magento_root_dir:  "/usr/share/nginx/html/"
+  when: not isApacheDir.stat.exists
+
+
+
+# ################################################################################
+# ##########################  Test Magento Downloaded  ###########################
+# ################################################################################
+- name: Count Files In app directory
+  shell: ls -1 "{{ magento_root_dir }}app" | wc -l
+  register: countAppFiles
+
+#- debug:
+#    msg: "Count Root DIR {{ countAppFiles.stdout }} "
+
+- name: SetUp isMagentoDownloaded
+  set_fact: isMagentoDownloaded="{{ False if countAppFiles.stdout == "0" else True }}"
+
+- include: download-magento.yml
+  when: not isMagentoDownloaded 
+
+# ################################################################################
+# ##########################  Test Magento Instalation  ##########################
+# ################################################################################
+- name: Check in database if magento2 is installed
+  shell: mysql -u root -Ns -e "SELECT COUNT(DISTINCT table_name) FROM information_schema.columns WHERE table_schema = '{{ magento.db_name }}'"
+  become: true
+  register: countMagentoDatabase
+
+- name: SetUp isMagentoInstalled
+  set_fact: isMagentoInstalled="{{ False if countMagentoDatabase.stdout == "0" else True }}"
+
+
+- name: Create a Magento database  {{ magento.db_name }}
+  become: true
+  mysql_db: name={{ magento.db_name }} state=present
+  when: isMagentoInstalled is undefined  or isMagentoInstalled != True
+
+- name: Create a dedicated user {{ magento.db_user }}
+  become: true
+  mysql_user: name={{ magento.db_user }} password={{ magento.db_password }} priv={{ magento.db_name }}.*:ALL,GRANT state=present
+  when: isMagentoInstalled is undefined  or isMagentoInstalled != True
+
+- name: Start Magento 2 Installation ....
+  shell: php bin/magento setup:install \
+    --cleanup-database \
+    --backend-frontname=admin \
+    --session-save=db \
+    --db-host=localhost \
+    --db-user={{ magento.db_user }} \
+    --db-password={{ magento.db_password }} \
+    --db-name={{ magento.db_name }} \
+    --use-rewrites=1 \
+    --admin-user={{ magento.admin_user }} \
+    --admin-password={{ magento.admin_password }} \
+    --admin-email={{ magento.admin_email }} \
+    --admin-firstname={{ magento.admin_firstname }} \
+    --admin-lastname={{ magento.admin_lastname }} \
+    --language={{ magento.language }} \
+    --currency={{ magento.currency }} \
+    --key={{ magento.crypt_key }} \
+    --base-url="http://{{ ansible_host }}"
+  args:
+    chdir: "{{ magento_root_dir }}"
+  when: isMagentoInstalled is undefined  or isMagentoInstalled != True
+
+- name: "Installation : Add repo authentication file"
+  template: src=templates/auth.json.j2 dest={{ magento_root_dir }}var/composer_home/auth.json
+
+
+# ################################################################################
+# ###########################   Install sample data   ############################
+# ################################################################################
+
+#in progress - to do test if instaled sample data, now always false and reinstall sample
+- name: SetUp isSampleDataInstalled
+  set_fact: isMagentoSampleDataInstalled=False
+
+- name: Setup sample data | change mode to developer
+  become: true
+  shell: >
+    php {{ magento_root_dir }}bin/magento deploy:mode:set developer
+  when: not isMagentoSampleDataInstalled 
+
+- name: Setup sample data | Deploy
+  become: true
+  shell: >
+    php {{ magento_root_dir }}bin/magento sampledata:deploy
+  args:
+      creates: "{{ magento_root_dir }}pub/media/catalog"
+  when: not isMagentoSampleDataInstalled
+
+- name: Setup sample data | Run upgrade
+  become: true
+  shell: >
+    php {{ magento_root_dir }}bin/magento setup:upgrade
+  when: not isMagentoSampleDataInstalled
+
+- name: Setup sample data | Set deploy mode to production
+  become: true
+  shell: >
+    php {{ magento_root_dir }}bin/magento deploy:mode:set production
+  when: not isMagentoSampleDataInstalled
+
+- name: Setup sample data | Reindex
+  become: true
+  shell: >
+    php {{ magento_root_dir }}bin/magento indexer:reindex
+  
+- name: Setup sample data | Clear cache
+  become: true
+  shell: >
+    php {{ magento_root_dir }}bin/magento cache:clean
+
+# ################################################################################
+# ##############   Setup file permission and restart web server   ################
+# ################################################################################
+
+- name: Update Magento File Permission On Var directory
+  file: path="{{ magento_root_dir }}var/"  mode=0777 state=directory recurse=yes
+
+- name: Update Magento File Permission On pub static
+  file: path="{{ magento_root_dir }}pub"  mode=0777 state=directory recurse=yes
+
+- name: Copy Nginx config for magento
+  template: src=templates/etc/nginx/conf.d/default.conf.j2 dest=/etc/nginx/conf.d/default.conf
+  when: not isApacheDir.stat.exists
+
+- name: Copy php7 fpm config for Nginx 
+  copy: src=files/etc/php/7.0/fpm/pool.d/www.conf.j2 dest=/etc/php/7.0/fpm/pool.d/www.conf
+  when: not isApacheDir.stat.exists
+
+- name: restart php7.0-fpm
+  become: yes
+  service: name=php7.0-fpm state=restarted
+  when: not isApacheDir.stat.exists
+
+- name: restart nginx
+  become: yes
+  service: name=nginx state=restarted
+  when: not isApacheDir.stat.exists
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,13 @@
+---
+
+- name: clear directory before magento install
+  file:
+    state: absent
+    path: "{{ magento_root_dir }}"
+
+- name: Download magento - please wati
+  shell: composer create-project --repository-url=https://{{ magento.account_public_key }}:{{ magento.account_private_key }}@repo.magento.com/ magento/project-community-edition {{ magento_root_dir }}
+  register: magentoInstallLog
+
+
+

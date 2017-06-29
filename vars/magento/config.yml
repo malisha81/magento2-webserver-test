@@ -1,0 +1,15 @@
+---
+db_name: magento2
+db_user: magento2
+db_password: magento2
+admin_user: admin
+admin_password: abraK4adabra
+admin_email: am2@mailinator.com
+admin_firstname: Developer
+admin_lastname: Test
+language: en_US
+currency: USD
+crypt_key: 8EtxAtMmIDAbD69r6ys1XR4UIdYsROn7
+version_to_install: "magento-ce-2.0.7"  # in progress
+
+

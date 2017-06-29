@@ -1,0 +1,6 @@
+
+#!/usr/bin/env ansible-playbook
+
+- include: webservers.yml
+- include: database.yml
+- include: magento2.yml

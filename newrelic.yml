@@ -1,0 +1,14 @@
+---
+- hosts: apache-server
+  become: yes
+  become_method: sudo
+  name: Setup New Relic
+  roles:
+    - newrelic
+
+- hosts: nginx-server
+  become: yes
+  become_method: sudo
+  name: Setup New Relic
+  roles:
+    - newrelic
