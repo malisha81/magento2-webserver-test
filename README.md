@@ -92,7 +92,10 @@ how to get new relic licence key: https://docs.newrelic.com/docs/accounts-partne
 <pre>ansible-playbook -i ./inventory.ini --private-key="am2.key" newrelic.yml</pre>
 
 <h2> run test </h2>
+
 * require apache banchmark application to be installed
+* add server list in  test.cfg
+
 
 troubleshuting:
 if you have trouble with timeout please edit test.sh and configure higer timeout.
