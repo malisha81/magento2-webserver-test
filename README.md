@@ -1,4 +1,4 @@
-<h2> SETUP ANIBLE and ANIBLE USER am2 </h2>
+<h2> SETUP ANSIBLE and remoute ANSIBLE USER am2 </h2>
 
 install ansible on your local computer: http://docs.ansible.com/ansible/intro_installation.html
 
